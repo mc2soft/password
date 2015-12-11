@@ -47,8 +47,17 @@ var _ = Suite(&PasswordSuite{})
 func (*PasswordSuite) TestNormal(c *C) {
 	for _, d := range testData {
 		p := Encrypt(d.password, d.rounds, d.salt)
+		c.Check(p.Rounds(), Equals, d.rounds)
+		c.Check(p.Salt(), DeepEquals, d.salt)
 		c.Check(p, Equals, d.encrypted)
 		c.Check(p.Verify(d.password), Equals, true)
+	}
+}
+
+func (*PasswordSuite) TestBadPassword(c *C) {
+	for _, d := range testData {
+		p := Encrypt(d.password, d.rounds, d.salt)
+		c.Check(p.Verify(d.password+"x"), Equals, false)
 	}
 }
 
